@@ -218,7 +218,7 @@ from scripts.API import API
 ```
 
 2. Initializing the API class
-```
+```py
 """
 Your JWT is needed upon initializing the API class. 
 You could also pass an empty string but you must update the value
