@@ -257,7 +257,7 @@ Example:
 
 - `min_p` | `depracated, float`: Also 'depracated' but was once used. Defaults to `0.1` and refers to the minimum presence.
 
-`stream` | `bool`: Whether to stream the AI's response or not. If `True`, then the `generate` function will use a `Generator[str, Any, Any]` to gradually yield tokens as the JLLM generates them. If `False`, the `generate` function will simply return the full text. Defaults to False.
+- `stream` | `bool`: Whether to stream the AI's response or not. If `True`, then the `generate` function will use a `Generator[str, Any, Any]` to gradually yield tokens as the JLLM generates them. If `False`, the `generate` function will simply return the full text. Defaults to False.
 
 - `temperature` | `float`: Value of 'randomness' for the AI. Defaults to `0.7`. Wouldn't recommend you to have this value over `1.2` but results vary, I suppose.
 
