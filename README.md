@@ -9,6 +9,7 @@
     - [Using an existing account](#using-an-existing-account)
     - [Registering with a burner account](#registering-with-a-burner-account)
 - [Chatting with the JLLM](#chatting-with-the-jllm)
+- [Common errors](#commonn-issues)
 - [Badges](#badges)
 
 ## Installation
