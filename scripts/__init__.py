@@ -84,6 +84,44 @@ async def is_jwt(request) -> str | None:
     # If the JWT token is not found, return None
     return None
 
+def file_exists(filepath: str) -> bool:
+
+    """
+    This function is used to check if a file exists.
+    
+    :param filepath: The path to the file.
+    :type filepath: str
+    
+    :return: Whether the file exists.
+    :rtype: bool
+    """
+
+    try:
+
+        with open(filepath, "r") as f:
+            return True
+
+    except FileNotFoundError:
+
+        return False
+    
+def makefile(filepath: str) -> None:
+
+    """
+    This function is used to create a file with no content.
+    
+    :param filepath: The path to the file.
+    :type filepath: str
+    
+    :param content: The content of the file.
+    :type content: str
+    
+    :return: None
+    """
+
+    with open(filepath, "x") as f:
+        f.close()
+
 # following function is used to verify the email
 def verify_mail(html_string: str) -> None:
 
@@ -259,6 +297,8 @@ __all__ = [
     "get_message",
     "random_string",
     "is_jwt_valid",
+    "makefile",
+    "file_exists",
     "get_jwt_from_temp",
     "get_preexisting_jwt",
 
