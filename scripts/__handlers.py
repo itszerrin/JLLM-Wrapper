@@ -2,7 +2,7 @@
 This file is used to handle the events.
 """
 
-from . import uc, logger
+from . import uc, logger, now
 
 def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
 
@@ -22,8 +22,10 @@ def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
 
     r = event.request
 
-    if r.url == "https://kim.janitorai.com/profiles/mine":
+    if r.url == "https://kim.janitorai.com/profiles/mine" or r.url == "https://janitorai.com/hampter/chats/homepage":
 
+        logger.info("Got a request to the profiles endpoint.")
+        
         if r.headers.get('Authorization') is not None:
 
             logger.info("Got JWT from the request! (Could be duplicate. Ignore.)")
@@ -33,4 +35,10 @@ def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
         
                 logger.info("Created a temporary file to store the JWT. The file is named TOKEN.temp.")
                 f.write(r.headers.get('Authorization'))
-                
+                f.flush()
+
+            with open("TIME.temp", "w") as f:
+
+                f.write(str(int(now())))
+                logger.info("Created a temporary file to store the timestamp. The file is named TIME.temp.")
+                f.flush()
