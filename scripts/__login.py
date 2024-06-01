@@ -88,7 +88,7 @@ async def login(email: str, password: str) -> str:
 
     # delete the file
     await br.wait(0.1) # wait for 0.1 seconds to prevent have enough time to close the file
-    remove("TOKEN.temp")
+    #remove("TOKEN.temp")
 
     # stop the browser
     await br.main_tab.close()
