@@ -2,7 +2,7 @@
 This file is used to handle the events.
 """
 
-from . import uc, logger, now
+from . import uc, logger, now, makefile, file_exists
 
 def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
 
@@ -29,6 +29,11 @@ def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
         if r.headers.get('Authorization') is not None:
 
             logger.info("Got JWT from the request! (Could be duplicate. Ignore.)")
+
+            if not file_exists("TOKEN.temp"):
+
+                logger.info("TOKEN.temp does not exist. Creating it.")
+                makefile("TOKEN.temp")
             
             # open a TOKEN.temp file and write the JWT token to it
             with open("TOKEN.temp", "w") as f:
@@ -36,6 +41,11 @@ def send_handler(event: uc.cdp.network.RequestWillBeSent) -> None:
                 logger.info("Created a temporary file to store the JWT. The file is named TOKEN.temp.")
                 f.write(r.headers.get('Authorization'))
                 f.flush()
+
+            if not file_exists("TIME.temp"):
+
+                logger.info("TIME.temp does not exist. Creating it.")
+                makefile("TIME.temp")
 
             with open("TIME.temp", "w") as f:
 
