@@ -71,6 +71,9 @@ async def login(email: str, password: str) -> str:
     # logging
     logger.info("User logged in successfully!")
 
+    # wait a second so the handler has enough time to write
+    await br.wait(1)
+
     # get the JWT by reading the TOKEN.temp file's content
     try:
 
@@ -82,7 +85,6 @@ async def login(email: str, password: str) -> str:
         with open("TOKEN.temp", "r") as f:
             _jwt: str = f.read()
 
-        
 
     except FileNotFoundError as e:
         logger.error("Could not intercept the JWT token. Please try again." + str(e))
