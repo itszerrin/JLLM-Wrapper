@@ -10,6 +10,7 @@ from os import remove
 import json
 import logging
 from uuid import uuid4
+from time import time as now
 
 # Third-party imports
 from secrets import token_urlsafe
@@ -31,6 +32,8 @@ The purpose of the below code is to provide a set of global variables that can b
 
 _WEBDRIVER_GLOBAL_HEADLESS: bool = False # whether to run the browser in headless mode. Not recommended for JWT interception
 _WEBDRIVER_GLOBAL_MINIMIZE: bool = False # whether to minimize the browser window. Not recommended for JWT interception
+
+_JANITORAI_JWT_EXPIRE_TIME: int = 10000 # the time in seconds after which the JWT token expires
 
 # --------------------------------------------------------------------------- LOGGING --------------------------------------------------------------------------- #
 """
@@ -142,6 +145,110 @@ def random_string(length: int) -> str:
 
     return token_urlsafe(length)
 
+# new function
+def is_jwt_valid(filepath: str):
+
+    """
+    This function is used to check if the JWT token is valid by comparing the creation date of the JWT token with the current time.
+    
+    :param filepath: The path to the JWT token file.
+    :type filepath: str
+    
+    :return: Whether the JWT token is valid.
+    :rtype: bool
+    """
+
+    # Read the JWT token from the file
+    try:
+
+        with open(filepath, "r") as f:
+            jwt_creation_date = f.read()
+
+            if int(now()) - int(jwt_creation_date) > _JANITORAI_JWT_EXPIRE_TIME:
+
+                logger.info("JWT token is expired.")
+                return False
+
+    except FileNotFoundError:
+
+        logger.error("JWT time file not found.")
+        return False
+    
+    logger.info(f"JWT token is valid. Expires in {_JANITORAI_JWT_EXPIRE_TIME/60} minutes.")
+    return True
+    
+# new function
+def get_jwt_from_temp() -> str | None:
+
+    """
+    This function is used to get the JWT token from the temporary file. Will automatically point to the TOKEN.temp file.
+    
+    :param filepath: The path to the JWT token file.
+    :type filepath: str
+    
+    :return: The JWT token.
+    :rtype: str | None
+    """
+
+    # Read the JWT token from the file
+    try:
+
+        with open("TOKEN.temp", "r") as f:
+            jwt = f.read()
+
+    except FileNotFoundError:
+
+        logger.error("JWT token file not found.")
+        return None
+
+    logger.info("JWT token found.")
+    return jwt
+
+# combining both functions above
+def get_preexisting_jwt() -> str | None:
+
+    """
+    This function is used to get the JWT token from the temporary file and check if it is valid.
+    Assumes that the JWT token is stored in a file named TOKEN.temp at root and the timestamp is stored in a file named TIME.temp at root.
+    
+    :param filepath: The path to the JWT token file.
+    :type filepath: str
+    
+    :return: The JWT token.
+    :rtype: str | None
+    """
+
+    # Read the JWT token from the file
+    try:
+
+        with open("TOKEN.temp", "r") as f:
+            jwt = f.read()
+
+    except FileNotFoundError:
+
+        logger.error("JWT token file not found.")
+        return None
+
+    # Read the timestamp from the file
+    try:
+
+        with open("TIME.temp", "r") as f:
+            jwt_creation_date = f.read()
+            __now = int(now())
+
+            if (__now - int(jwt_creation_date)) > _JANITORAI_JWT_EXPIRE_TIME:
+
+                logger.info(f"JWT token has expired since {__now - int(jwt_creation_date)} seconds.")
+                return None
+
+    except FileNotFoundError:
+
+        logger.error("JWT time file not found.")
+        return None
+
+    logger.info(f"JWT token found. Expires in {(_JANITORAI_JWT_EXPIRE_TIME - (int(now()) - int(jwt_creation_date)))/60} minutes.")
+    return jwt
+
 # exports
 __all__ = [
     "_WEBDRIVER_GLOBAL_HEADLESS",
@@ -151,6 +258,9 @@ __all__ = [
     "verify_mail",
     "get_message",
     "random_string",
+    "is_jwt_valid",
+    "get_jwt_from_temp",
+    "get_preexisting_jwt",
 
     "logger",
     "__webdriver",
@@ -160,6 +270,7 @@ __all__ = [
     "HTTPAdapter",
     "Retry",
     "json",
+    "now"
     "UserAgent",
     "uuid4",
     "EMail",
