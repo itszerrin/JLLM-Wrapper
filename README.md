@@ -1,5 +1,7 @@
 # JLLM Wrapper for Python
 
+**! THE API IS CURRENTLY DOWN DUE TO INFRASTRUCTURE CHANGES. BE PATIENT, A FIX IS DROPPING SOON. Nothing too major was added, they just bloated their requesting system with a bunch of useless shit (don't know what they're doing). !**
+
 ## Table of Contents
 - [Installation](#installation)
 - [Introduction](#introduction)
