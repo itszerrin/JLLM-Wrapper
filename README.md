@@ -1,6 +1,10 @@
 # JLLM Wrapper for Python
 
-**! THE API IS CURRENTLY DOWN DUE TO INFRASTRUCTURE CHANGES. BE PATIENT, A FIX IS DROPPING SOON. Nothing too major was added, they just bloated their requesting system with a bunch of useless shit (don't know what they're doing). !**
+**The API is back up but await upgrades.**
+
+What changed:
+
+- The API now creates a burner account and persona in your account. This is required due to the new infrastructure.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -226,6 +230,12 @@ from scripts.API import API
 Your JWT is needed upon initializing the API class. 
 You could also pass an empty string but you must update the value
 with an actually valid JWT before sending your request
+
+Due to new infrastructure:
+
+The chatting procedure now requires you to also provide a character link. Please use: "0d97bea1-eb06-4093-a470-c7945d14a58a_character-willson-wang" as the second parameter when initializing the API.
+Never use your own characters.
+It's recommended to use just any popular character because JAI won't take them down.
 """
 
 api = API(jwt) # replace jwt with the actual variable for you that holds your JWT value.
@@ -268,7 +278,7 @@ Example:
 
 4. Calling the `generate` function example **without** streaming:
 ```py
-api = API(jwt) # use your actual JWT here
+api = API(jwt, "0d97bea1-eb06-4093-a470-c7945d14a58a_character-willson-wang") # use your actual JWT here and a character that is public on JAI
 
 resp = api.generate(
     messages=[{"role": "user", "content": "Yo"}],
@@ -281,7 +291,7 @@ print(next(resp))
 
 5. Calling the `generate` function but this time with streaming
 ```py
-api = API(jwt)
+api = API(jwt, "0d97bea1-eb06-4093-a470-c7945d14a58a_character-willson-wang")
 
 for chunk in api.generate(
     messages=[{"role": "user", "content": "Yo"}],
