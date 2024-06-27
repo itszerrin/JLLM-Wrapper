@@ -305,8 +305,7 @@ print("\n") # final newline so AI's output doesn't merge with the debug message 
 ## Common issues
 
 1. Error `403`
-   Sometimes, I get error `403` and you might too. It will say retrying but the program will abruptly end. I will implement a functioning retry in the near future.
-   Re-running the code works. If the issue persists, file an issue.
+   Sometimes, I get error `403` and you might too. This can happen in the generation route, chats route and personas route. It's sadly very common right now. Re-run the code a few times and it'll work. I will implement a fix in the future.
 
 ## Badges
 [![License: GPL v3.0](https://img.shields.io/badge/License-GPL%20v3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
