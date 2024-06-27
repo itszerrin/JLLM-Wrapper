@@ -33,7 +33,7 @@ The purpose of the below code is to provide a set of global variables that can b
 _WEBDRIVER_GLOBAL_HEADLESS: bool = False # whether to run the browser in headless mode. Not recommended for JWT interception
 _WEBDRIVER_GLOBAL_MINIMIZE: bool = False # whether to minimize the browser window. Not recommended for JWT interception
 
-_JANITORAI_JWT_EXPIRE_TIME: int = 10000 # the time in seconds after which the JWT token expires
+_JANITORAI_JWT_EXPIRE_TIME: int = 3600 # the time in seconds after which the JWT token expires
 
 # --------------------------------------------------------------------------- LOGGING --------------------------------------------------------------------------- #
 """
@@ -83,44 +83,6 @@ async def is_jwt(request) -> str | None:
     
     # If the JWT token is not found, return None
     return None
-
-def file_exists(filepath: str) -> bool:
-
-    """
-    This function is used to check if a file exists.
-    
-    :param filepath: The path to the file.
-    :type filepath: str
-    
-    :return: Whether the file exists.
-    :rtype: bool
-    """
-
-    try:
-
-        with open(filepath, "r") as f:
-            return True
-
-    except FileNotFoundError:
-
-        return False
-    
-def makefile(filepath: str) -> None:
-
-    """
-    This function is used to create a file with no content.
-    
-    :param filepath: The path to the file.
-    :type filepath: str
-    
-    :param content: The content of the file.
-    :type content: str
-    
-    :return: None
-    """
-
-    with open(filepath, "x") as f:
-        f.close()
 
 # following function is used to verify the email
 def verify_mail(html_string: str) -> None:
@@ -287,6 +249,26 @@ def get_preexisting_jwt() -> str | None:
     logger.info(f"JWT token found. Expires in {(_JANITORAI_JWT_EXPIRE_TIME - (int(now()) - int(jwt_creation_date)))/60} minutes.")
     return jwt
 
+def parse_chunk(chunk) -> str:
+
+    """
+    When streaming, this function helps parse the word the AI said out of the current chunk.
+    
+    :param chunk: The chunk of the response.
+
+    :return: The parsed chunk.
+    :rtype: str
+    """
+
+    try:
+
+        # will fail at last chunk: [DONE]
+        delta_chunk = json.loads(chunk.decode("utf-8").removeprefix("data: "))
+
+        return delta_chunk["choices"][0]["delta"]["content"]
+    
+    except: return ''
+
 # exports
 __all__ = [
     "_WEBDRIVER_GLOBAL_HEADLESS",
@@ -297,10 +279,9 @@ __all__ = [
     "get_message",
     "random_string",
     "is_jwt_valid",
-    "makefile",
-    "file_exists",
     "get_jwt_from_temp",
     "get_preexisting_jwt",
+    "parse_chunk",
 
     "logger",
     "__webdriver",
