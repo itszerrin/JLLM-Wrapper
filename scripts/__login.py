@@ -2,7 +2,7 @@
 Full login script. This script is used to login the user automatically by using the email address and password provided by the user. it then returns a JWT.
 """
 
-from . import uc, logger, makefile, file_exists, _WEBDRIVER_GLOBAL_HEADLESS, _WEBDRIVER_GLOBAL_MINIMIZE
+from . import uc, logger, _WEBDRIVER_GLOBAL_HEADLESS, _WEBDRIVER_GLOBAL_MINIMIZE
 from .__handlers import send_handler
 
 async def login(email: str, password: str) -> str:
@@ -25,6 +25,7 @@ async def login(email: str, password: str) -> str:
 
     # add handler to the browser to intercept the JWT token
     br.main_tab.add_handler(uc.cdp.network.RequestWillBeSent, send_handler)
+    #br.main_tab.add_handler(uc.cdp.network.ResponseReceived, response_handler)
 
     # check if the browser should be minimized
     if _WEBDRIVER_GLOBAL_MINIMIZE:
@@ -71,20 +72,11 @@ async def login(email: str, password: str) -> str:
     # logging
     logger.info("User logged in successfully!")
 
-    # wait a second so the handler has enough time to write
-    await br.wait(1)
-
     # get the JWT by reading the TOKEN.temp file's content
     try:
 
-        # check if file exists
-        if not file_exists("TOKEN.temp"):
-            makefile("TOKEN.temp")
-
-
         with open("TOKEN.temp", "r") as f:
             _jwt: str = f.read()
-
 
     except FileNotFoundError as e:
         logger.error("Could not intercept the JWT token. Please try again." + str(e))
