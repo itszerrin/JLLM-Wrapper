@@ -238,7 +238,7 @@ Never use your own characters.
 It's recommended to use just any popular character because JAI won't take them down.
 """
 
-api = API(jwt) # replace jwt with the actual variable for you that holds your JWT value.
+api = API(jwt, "0d97bea1-eb06-4093-a470-c7945d14a58a_character-willson-wang") # replace jwt with the actual variable for you that holds your JWT value.
 ```
 
 3. Preparing your parameters:
@@ -268,13 +268,11 @@ Example:
 
 - `repetition_penalty` | `depracated, float`: As this isn't passed to the JLLM on the official JAI website, I'm not sure whether this actually has a difference. However, it once was used but I will call it depracated anyways now. Defaults to `1.2`. Wouldn't recommend changing this value.
 
-- `min_p` | `depracated, float`: Also 'depracated' but was once used. Defaults to `0.1` and refers to the minimum presence.
-
 - `stream` | `bool`: Whether to stream the AI's response or not. If `True`, then the `generate` function will use a `Generator[str, Any, Any]` to gradually yield tokens as the JLLM generates them. If `False`, the `generate` function will simply return the full text. Defaults to False.
 
 - `temperature` | `float`: Value of 'randomness' for the AI. Defaults to `0.7`. Wouldn't recommend you to have this value over `1.2` but results vary, I suppose.
 
-- `stop` | `list[str]`: A list of 'stop' elements for the LLM. JAI uses only a `<` and I would recommend using this too. Like I mentioned, defaults to `['<']`.
+- `system_message` | `str`: A custom message that heavily influences how the AI acts.
 
 4. Calling the `generate` function example **without** streaming:
 ```py
