@@ -18,52 +18,55 @@ class API():
         This function is used to initialize the API class.
         """
         
-        self.jwt = _jwt
+        self.jwt: str = _jwt
         self.__cf_bm: str = "7sLHc0cfULW9qT.oYrB44bAsmN1kBkwjtzWZhXCwWfU-1719496065-1.0.1.1-8RTEqETSd1h_j2JLhoypCh3eS9fbRY7qqlOEKLOW4DY_EtkgqcQgkcx1wdOFK06gvPiFHjMEkFcgE2wprFVNDA"
 
-        self.character_id = _character.split("_")[0]
-        self.character_name = _character.split("_")[1]
+        self.character_id: str = _character.split("_")[0]
+        self.character_name: str = _character.split("_")[1]
+
+        self.current_version: str = "2024-06-28.4d0f3a580"
+
+        self.retries = Retry(total=5,
+                backoff_factor=0.1,
+                status_forcelist=[ 403 ]
+        )
 
         # remove the "Bearer " prefix from the JWT token
         if self.jwt.startswith("Bearer "):
 
             self.jwt = self.jwt.removeprefix("Bearer ")
 
-    def upload_persona(self, name: str, appearance: str) -> Dict[str, Any]:
+    def get_persona(self, index: int = 0) -> Dict[str, Any]:
 
-        url: str = "https://janitorai.com/hampter/personas"
+        url: str = "https://janitorai.com/hampter/profiles/mine"
+
+        s = requests.Session()
+
+        s.mount('https://', HTTPAdapter(max_retries=self.retries))
 
         headers = {
-            'Host': 'janitorai.com',
-            'User-Agent': f'{UserAgent().random}',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Content-Type': 'application/json',
-            'Content-Length': f'{randint(50, 55)}',
-            'Referer': f'https://janitorai.com/my_personas',
-            'x-app-version': '2024-06-27.4c3f76bc',
-            'Origin': 'https://janitorai.com',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-origin',
-            'Authorization': f'Bearer {self.jwt}',
-            'Connection': 'keep-alive',
-            'Cookie': f'__cf_bm={self.__cf_bm}',
-            'TE': 'trailers'
+            "Host": "janitorai.com",
+            "User-Agent": f"{UserAgent().random}",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Referer": "https://janitorai.com/my_personas",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "no-cors",
+            "Sec-Fetch-Site": "same-origin",
+            "x-app-version": f"{self.current_version}",
+            "Connection": "keep-alive",
+            "TE": "trailers",
+            "Authorization": f"Bearer {self.jwt}",
+            "Priority": "u=4",
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache"
         }
 
-        data = {
-            "name": name,
-            "appearance": appearance,
-            "avatar": '',
-            "order": 2
-        }
-
-        response = requests.post(url, headers=headers, json=data, cookies={"__cf_bm": self.__cf_bm})
+        response = s.get(url, headers=headers, cookies={"__cf_bm": self.__cf_bm})
         response.raise_for_status()
 
-        return response.json()        
+        return response.json()["personas"][index] 
 
     def create_chat(self) -> Dict[str, Any]:
 
@@ -81,6 +84,10 @@ class API():
         """
 
         url: str = "https://janitorai.com/hampter/chats"
+        
+        s = requests.Session()
+
+        s.mount('https://', HTTPAdapter(max_retries=self.retries))
 
         headers = {
             'Host': 'janitorai.com',
@@ -91,7 +98,7 @@ class API():
             'Content-Type': 'application/json',
             'Content-Length': f'{randint(50, 55)}',
             'Referer': f'https://janitorai.com/characters/{self.character_id}_{self.character_name}',
-            'x-app-version': '2024-06-27.4c3f76bc',
+            'x-app-version': f"{self.current_version}",
             'Origin': 'https://janitorai.com',
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
@@ -106,8 +113,10 @@ class API():
             "character_id": self.character_id,
         }
 
-        response = requests.post(url, headers=headers, json=data, cookies={"__cf_bm": self.__cf_bm})
+        response = s.post(url, headers=headers, json=data, cookies={"__cf_bm": self.__cf_bm})
         response.raise_for_status()
+
+        s.close()
 
         return response.json()
 
@@ -163,7 +172,7 @@ class API():
 
         # create a fake new chat
         chat = self.create_chat()
-        persona = self.upload_persona(f"jai-llm{randint(00000, 99999)}", " ")
+        persona = self.get_persona(0)
 
 
         headers = {
